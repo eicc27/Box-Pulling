@@ -1,0 +1,6 @@
+.vscode/
+*.exe
+*.doc
+*.docx
+test2.cpp
+test3.cpp

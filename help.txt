@@ -1,0 +1,57 @@
+***This file is aimed at helping you guys understand how the game will be played, by LISTING KEYBOARD CONFIGURATION.
+***Therefore it has not been designed to be able to be overwritten in the .cpp program.
+*It will be displayed in the command line inside the game, and chensihan_20302010003 has the copyright.
+**The configuration is UNMODIFIABLE for now (maybe forever), so please STRICTLY FOLLOW THE RULES if you guys want a SMOOTH GAMING EXPERIENCE.
+***Even though some naughty guys wanna ignore my warning above, this TEDIOUS program still has a sort of self-defending mechanic to guide you back to rail, but don't expect that too much.
+WARNING: THE CHINESE IN THIS PROGRAM CAN ONLY BE NORMALLY DISPLAYED UNDER GB18030 STANDARD. IF UTF-8 IS USED, THERE MIGHT BE SOME TROUBLES. (GB18030 is an extended universal version of GB2312.)
+
+
+
+THIS PROGRAM USES SOME CERTAIN CHARACTERS TO MATCH THE GAMING CONTENTS, THEIR MAPPINGS ARE ALL LISTED BELOW:
+
+
+
+¡ö----------Walls, which both you and your boxes can't pass through
+¡õ----------Your boxes, which you need to pull to the target point
+¡ð----------Target points
+¡ù----------You
+¡ñ----------Boxes thet are already AT the target points
+
+
+
+AND KEYBOARD MAPPINGS ARE ALL LISTED BELOW, CATAGORIZED:
+
+
+
+1. When you firstly asked to input a character (or we can say you are in the MAIN MENU of this game):
+h----------Open help.txt
+s----------Go to level selection menu
+q----------Quit the program
+f----------Auto-save frequency definition
+
+2.When you enter the level selection menu:
+1~9--------New Level preview
+s----------Saved Level preview
+y----------An affirmative key used only after level preview is displayed
+n----------back to level selection
+
+3.When you are playing:
+w----------Go up
+a----------Go left
+s----------Go down
+d----------Go right
+q----------Quit to main menu (it means 'Save & Exit' by default)
+e----------Quit to main menu without saving
+r----------Save only
+z----------Restart this game
+x----------recall to your last move
+/----------enable command mode:
+/x---------select which step you would like to go back to
+/moving_command(w,a,s,d)----------enable direct super moving mode
+
+4.When you win:
+s----------Go to level selection menu
+m----------Go to main menu
+r----------Replay this game
+***The 'Save' function in this program is still not very mature, so it can only save your LAST GAMING INFORMATION.
+***Finally, it is only a help.txt. So if you are an admin or inspector, plz refer to the .doc or .md file.
