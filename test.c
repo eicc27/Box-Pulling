@@ -6,13 +6,16 @@
 #define Y 100
 #define X 100
 #define debug() MapRenderer()
+#define GoUp() Go(0, -1)
+#define GoDown() Go(0, 1)
+#define GoLeft() Go(-1, 0)
+#define GoRight() Go(1, 0)
 int map[Y + 1][X + 1] = {};
 //int hist_map[5][Y + 1][X + 1] = {};
 //记录4次历史记录：使用x键撤回一次，使用/x键选择撤回到第几次——改成结构体：最多10次——改完了！
 int availMoveCnt, lastMoveCnt, gameInputCnt;
 int player_x, player_y;
-int _row, _column;
-int _chests;
+int row, column, chests;
 char level;
 char guiInputKey[3] = {'-', '-'};
 //0-main menu, 1-level selection
@@ -255,9 +258,9 @@ void PlayerInit()
 {
     printf("Initiating game file. It won't take long...\n");
     int i, j;
-    for (i = 0; i <= _column; i++)
+    for (i = 0; i <= column; i++)
     {
-        for (j = 0; j <= _row; j++)
+        for (j = 0; j <= row; j++)
         {
             if (map[i][j] == 5 || map[i][j] == 7)
             {
@@ -271,9 +274,9 @@ void PlayerInit()
 void MapRenderer()
 {
     int i, j;
-    for (i = 0; i < _column; i++)
+    for (i = 0; i < column; i++)
     {
-        for (j = 0; j < _row; j++)
+        for (j = 0; j < row; j++)
         {
             switch (map[i][j])
             {
@@ -306,12 +309,12 @@ void MapRenderer()
         printf("\n");
     }
 }
-void HistMapRenderer(int order)
+void MapRenderer(int order)
 {
     int i, j;
-    for (i = 0; i < _column; i++)
+    for (i = 0; i < column; i++)
     {
-        for (j = 0; j < _row; j++)
+        for (j = 0; j < row; j++)
         {
             switch (histMap[i][j].serial[order])
             {
@@ -344,469 +347,124 @@ void HistMapRenderer(int order)
         printf("\n");
     }
 }
-void GoUp()
+void Go(int vec_x, int vec_y)
 {
     lastMoveCnt = availMoveCnt;
-    int upper_x = player_x;
-    int upper_y = player_y - 1;
+    int x_1 = player_x + vec_x;
+    int y_1 = player_y + vec_y;
+    int x_2 = x_1 + vec_x;
+    int y_2 = y_1 + vec_y;
     if (map[player_y][player_x] == 7)
     {
-        if (map[upper_y][upper_x] == 1)
+        if (map[y_1][x_1] == 1)
             return;
-        else if (map[upper_y][upper_x] == 3)
+        else if (map[y_1][x_1] == 3)
         {
-            if (map[upper_y - 1][upper_x] == 1 || map[upper_y - 1][upper_x] == 3 || map[upper_y - 1][upper_x] == 6)
+            if (map[y_2][x_2] == 1 || map[y_2][x_2] == 3 || map[y_2][x_2] == 6)
                 return;
-            else if (map[upper_y - 1][upper_x] == 4)
+            else if (map[y_2][x_2] == 4)
             {
-                map[upper_y - 1][upper_x] = 6;
-                map[upper_y][upper_x] = 5;
+                map[y_2][x_2] = 6;
+                map[y_1][x_1] = 5;
                 map[player_y][player_x] = 4;
-                _chests--;
+                chests--;
                 availMoveCnt++;
             }
-            else if (map[upper_y - 1][upper_x] == 2)
+            else if (map[y_2][x_2] == 2)
             {
-                map[upper_y - 1][upper_x] = 3;
-                map[upper_y][upper_x] = 5;
+                map[y_2][x_2] = 3;
+                map[y_1][x_1] = 5;
                 map[player_y][player_x] = 4;
                 availMoveCnt++;
             }
         }
-        else if (map[upper_y][upper_x] == 6)
+        else if (map[y_1][x_1] == 6)
         {
-            if (map[upper_y - 1][upper_x] == 1 || map[upper_y - 1][upper_x] == 3 || map[upper_y - 1][upper_x] == 6)
+            if (map[y_2][x_1] == 1 || map[y_2][x_2] == 3 || map[y_2][x_2] == 6)
                 return;
-            else if (map[upper_y - 1][upper_x] == 4)
+            else if (map[y_2][x_2] == 4)
             {
-                map[upper_y - 1][upper_x] = 6;
-                map[upper_y][upper_x] = 7;
+                map[y_2][x_2] = 6;
+                map[y_1][x_1] = 7;
                 map[player_y][player_x] = 4;
                 availMoveCnt++;
             }
-            else if (map[upper_y - 1][upper_x] == 2)
+            else if (map[y_2][x_2] == 2)
             {
-                map[upper_y - 1][upper_x] = 3;
-                map[upper_y][upper_x] = 7;
+                map[y_2][x_2] = 3;
+                map[y_1][x_1] = 7;
                 map[player_y][player_x] = 4;
                 availMoveCnt++;
             }
         }
-        else if (map[upper_y][upper_x] == 4)
+        else if (map[y_1][x_1] == 4)
         {
             map[player_y][player_x] = 4;
-            map[upper_y][upper_x] = 7;
+            map[y_1][x_1] = 7;
             availMoveCnt++;
         }
         else
         {
             map[player_y][player_x] = 4;
-            map[upper_y][upper_x] = 5;
+            map[y_1][x_1] = 5;
             availMoveCnt++;
         }
     }
-    else if (map[upper_y][upper_x] == 1)
+    else if (map[y_1][x_1] == 1)
         return;
-    else if (map[upper_y][upper_x] == 3)
+    else if (map[y_1][x_1] == 3)
     {
-        if (map[upper_y - 1][upper_x] == 1 || map[upper_y - 1][upper_x] == 3 || map[upper_y - 1][upper_x] == 6)
+        if (map[y_2][x_2] == 1 || map[y_2][x_2] == 3 || map[y_2][x_2] == 6)
             return;
-        else if (map[upper_y - 1][upper_x] == 4)
+        else if (map[y_2][x_2] == 4)
         {
-            map[upper_y - 1][upper_x] = 6;
-            map[upper_y][upper_x] = 5;
+            map[y_2][x_2] = 6;
+            map[y_1][x_1] = 5;
             map[player_y][player_x] = 2;
-            _chests--;
+            chests--;
             availMoveCnt++;
         }
-        else if (map[upper_y - 1][upper_x] == 2)
+        else if (map[y_2][x_2] == 2)
         {
-            map[upper_y - 1][upper_x] = 3;
-            map[upper_y][upper_x] = 5;
+            map[y_2][x_2] = 3;
+            map[y_1][x_1] = 5;
             map[player_y][player_x] = 2;
             availMoveCnt++;
         }
     }
-    else if (map[upper_y][upper_x] == 6)
+    else if (map[y_1][x_1] == 6)
     {
-        if (map[upper_y - 1][upper_x] == 1 || map[upper_y - 1][upper_x] == 3 || map[upper_y - 1][upper_x] == 6)
+        if (map[y_2][x_2] == 1 || map[y_2][x_2] == 3 || map[y_2][x_2] == 6)
             return;
-        else if (map[upper_y - 1][upper_x] == 4)
+        else if (map[y_2][x_2] == 4)
         {
-            map[upper_y - 1][upper_x] = 6;
-            map[upper_y][upper_x] = 7;
+            map[y_2][x_2] = 6;
+            map[y_1][x_1] = 7;
             map[player_y][player_x] = 2;
             availMoveCnt++;
         }
-        else if (map[upper_y - 1][upper_x] == 2)
+        else if (map[y_2][x_2] == 2)
         {
-            map[upper_y - 1][upper_x] = 3;
-            map[upper_y][upper_x] = 7;
+            map[y_2][x_2] = 3;
+            map[y_1][x_1] = 7;
             map[player_y][player_x] = 2;
             availMoveCnt++;
         }
     }
-    else if (map[upper_y][upper_x] == 4)
+    else if (map[y_1][x_1] == 4)
     {
-        map[upper_y][upper_x] = 7;
+        map[y_1][x_1] = 7;
         map[player_y][player_x] = 2;
         availMoveCnt++;
     }
     else
     {
         map[player_y][player_x] = 2;
-        map[upper_y][upper_x] = 5;
+        map[y_1][x_1] = 5;
         availMoveCnt++;
     }
-    player_y = upper_y;
-}
-void GoDown()
-{
-    lastMoveCnt = availMoveCnt;
-    int lower_x = player_x;
-    int lower_y = player_y + 1;
-    if (map[player_y][player_x] == 7)
-    {
-        if (map[lower_y][lower_x] == 1)
-            return;
-        else if (map[lower_y][lower_x] == 3)
-        {
-            if (map[lower_y + 1][lower_x] == 1 || map[lower_y + 1][lower_x] == 3 || map[lower_y + 1][lower_x] == 6)
-                return;
-            else if (map[lower_y + 1][lower_x] == 4)
-            {
-                map[lower_y + 1][lower_x] = 6;
-                map[lower_y][lower_x] = 5;
-                map[player_y][player_x] = 4;
-                _chests--;
-                availMoveCnt++;
-            }
-            else if (map[lower_y + 1][lower_x] == 2)
-            {
-                map[lower_y + 1][lower_x] = 3;
-                map[lower_y][lower_x] = 5;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-        }
-        else if (map[lower_y][lower_x] == 6)
-        {
-            if (map[lower_y + 1][lower_x] == 1 || map[lower_y + 1][lower_x] == 3 || map[lower_y + 1][lower_x] == 6)
-                return;
-            else if (map[lower_y + 1][lower_x] == 4)
-            {
-                map[lower_y + 1][lower_x] = 6;
-                map[lower_y][lower_x] = 7;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-            else if (map[lower_y + 1][lower_x] == 2)
-            {
-                map[lower_y + 1][lower_x] = 3;
-                map[lower_y][lower_x] = 7;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-        }
-        else if (map[lower_y][lower_x] == 4)
-        {
-            map[player_y][player_x] = 4;
-            map[lower_y][lower_x] = 7;
-            availMoveCnt++;
-        }
-        else
-        {
-            map[player_y][player_x] = 4;
-            map[lower_y][lower_x] = 5;
-            availMoveCnt++;
-        }
-    }
-    else if (map[lower_y][lower_x] == 1)
-        return;
-    else if (map[lower_y][lower_x] == 3)
-    {
-        if (map[lower_y + 1][lower_x] == 1 || map[lower_y + 1][lower_x] == 3 || map[lower_y + 1][lower_x] == 6)
-            return;
-        else if (map[lower_y + 1][lower_x] == 4)
-        {
-            map[lower_y + 1][lower_x] = 6;
-            map[lower_y][lower_x] = 5;
-            map[player_y][player_x] = 2;
-            _chests--;
-            availMoveCnt++;
-        }
-        else if (map[lower_y + 1][lower_x] == 2)
-        {
-            map[lower_y + 1][lower_x] = 3;
-            map[lower_y][lower_x] = 5;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-    }
-    else if (map[lower_y][lower_x] == 6)
-    {
-        if (map[lower_y + 1][lower_x] == 1 || map[lower_y + 1][lower_x] == 3 || map[lower_y + 1][lower_x] == 6)
-            return;
-        else if (map[lower_y + 1][lower_x] == 4)
-        {
-            map[lower_y + 1][lower_x] = 6;
-            map[lower_y][lower_x] = 7;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-        else if (map[lower_y + 1][lower_x] == 2)
-        {
-            map[lower_y + 1][lower_x] = 3;
-            map[lower_y][lower_x] = 7;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-    }
-    else if (map[lower_y][lower_x] == 4)
-    {
-        map[lower_y][lower_x] = 7;
-        map[player_y][player_x] = 2;
-        availMoveCnt++;
-    }
-    else
-    {
-        map[player_y][player_x] = 2;
-        map[lower_y][lower_x] = 5;
-        availMoveCnt++;
-    }
-    player_y = lower_y;
-}
-void GoLeft()
-{
-    lastMoveCnt = availMoveCnt;
-    int left_x = player_x - 1;
-    int left_y = player_y;
-    if (map[player_y][player_x] == 7)
-    {
-        if (map[left_y][left_x] == 1)
-            return;
-        else if (map[left_y][left_x] == 3)
-        {
-            if (map[left_y][left_x - 1] == 1 || map[left_y][left_x - 1] == 3 || map[left_y][left_x - 1] == 6)
-                return;
-            else if (map[left_y][left_x - 1] == 4)
-            {
-                map[left_y][left_x - 1] = 6;
-                map[left_y][left_x] = 5;
-                map[player_y][player_x] = 4;
-                _chests--;
-                availMoveCnt++;
-            }
-            else if (map[left_y][left_x - 1] == 2)
-            {
-                map[left_y][left_x - 1] = 3;
-                map[left_y][left_x] = 5;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-        }
-        else if (map[left_y][left_x] == 6)
-        {
-            if (map[left_y][left_x - 1] == 1 || map[left_y][left_x - 1] == 3 || map[left_y][left_x - 1] == 6)
-                return;
-            else if (map[left_y][left_x - 1] == 4)
-            {
-                map[left_y][left_x - 1] = 6;
-                map[left_y][left_x] = 7;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-            else if (map[left_y][left_x - 1] == 2)
-            {
-                map[left_y][left_x - 1] = 3;
-                map[left_y][left_x] = 7;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-        }
-        else if (map[left_y][left_x] == 4)
-        {
-            map[player_y][player_x] = 4;
-            map[left_y][left_x] = 7;
-            availMoveCnt++;
-        }
-        else
-        {
-            map[player_y][player_x] = 4;
-            map[left_y][left_x] = 5;
-            availMoveCnt++;
-        }
-    }
-    else if (map[left_y][left_x] == 1)
-        return;
-    else if (map[left_y][left_x] == 3)
-    {
-        if (map[left_y][left_x - 1] == 1 || map[left_y][left_x - 1] == 3 || map[left_y][left_x - 1] == 6)
-            return;
-        else if (map[left_y][left_x - 1] == 4)
-        {
-            map[left_y][left_x - 1] = 6;
-            map[left_y][left_x] = 5;
-            map[player_y][player_x] = 2;
-            _chests--;
-            availMoveCnt++;
-        }
-        else if (map[left_y][left_x - 1] == 2)
-        {
-            map[left_y][left_x - 1] = 3;
-            map[left_y][left_x] = 5;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-    }
-    else if (map[left_y][left_x] == 6)
-    {
-        if (map[left_y][left_x - 1] == 1 || map[left_y][left_x - 1] == 3 || map[left_y][left_x - 1] == 6)
-            return;
-        else if (map[left_y][left_x - 1] == 4)
-        {
-            map[left_y][left_x - 1] = 6;
-            map[left_y][left_x] = 7;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-        else if (map[left_y][left_x - 1] == 2)
-        {
-            map[left_y][left_x - 1] = 3;
-            map[left_y][left_x] = 7;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-    }
-    else if (map[left_y][left_x] == 4)
-    {
-        map[left_y][left_x] = 7;
-        map[player_y][player_x] = 2;
-        availMoveCnt++;
-    }
-    else
-    {
-        map[player_y][player_x] = 2;
-        map[left_y][left_x] = 5;
-        availMoveCnt++;
-    }
-    player_x = left_x;
-}
-void GoRight()
-{
-    lastMoveCnt = availMoveCnt;
-    int right_x = player_x + 1;
-    int right_y = player_y;
-    if (map[player_y][player_x] == 7)
-    {
-        if (map[right_y][right_x] == 1)
-            return;
-        else if (map[right_y][right_x] == 3)
-        {
-            if (map[right_y][right_x + 1] == 1 || map[right_y][right_x + 1] == 3 || map[right_y][right_x + 1] == 6)
-                return;
-            else if (map[right_y][right_x + 1] == 4)
-            {
-                map[right_y][right_x + 1] = 6;
-                map[right_y][right_x] = 5;
-                map[player_y][player_x] = 4;
-                _chests--;
-                availMoveCnt++;
-            }
-            else if (map[right_y][right_x + 1] == 2)
-            {
-                map[right_y][right_x + 1] = 3;
-                map[right_y][right_x] = 5;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-        }
-        else if (map[right_y][right_x] == 6)
-        {
-            if (map[right_y][right_x + 1] == 1 || map[right_y][right_x + 1] == 3 || map[right_y][right_x + 1] == 6)
-                return;
-            else if (map[right_y][right_x + 1] == 4)
-            {
-                map[right_y][right_x + 1] = 6;
-                map[right_y][right_x] = 7;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-            else if (map[right_y][right_x + 1] == 2)
-            {
-                map[right_y][right_x + 1] = 3;
-                map[right_y][right_x] = 7;
-                map[player_y][player_x] = 4;
-                availMoveCnt++;
-            }
-        }
-        else if (map[right_y][right_x] == 4)
-        {
-            map[player_y][player_x] = 4;
-            map[right_y][right_x] = 7;
-            availMoveCnt++;
-        }
-        else
-        {
-            map[player_y][player_x] = 4;
-            map[right_y][right_x] = 5;
-            availMoveCnt++;
-        }
-    }
-    else if (map[right_y][right_x] == 1)
-        return;
-    else if (map[right_y][right_x] == 3)
-    {
-        if (map[right_y][right_x + 1] == 1 || map[right_y][right_x + 1] == 3 || map[right_y][right_x + 1] == 6)
-            return;
-        else if (map[right_y][right_x + 1] == 4)
-        {
-            map[right_y][right_x + 1] = 6;
-            map[right_y][right_x] = 5;
-            map[player_y][player_x] = 2;
-            _chests--;
-            availMoveCnt++;
-        }
-        else if (map[right_y][right_x + 1] == 2)
-        {
-            map[right_y][right_x + 1] = 3;
-            map[right_y][right_x] = 5;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-    }
-    else if (map[right_y][right_x] == 6)
-    {
-        if (map[right_y][right_x + 1] == 1 || map[right_y][right_x + 1] == 3 || map[right_y][right_x + 1] == 6)
-            return;
-        else if (map[right_y][right_x + 1] == 4)
-        {
-            map[right_y][right_x + 1] = 6;
-            map[right_y][right_x] = 7;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-        else if (map[right_y][right_x + 1] == 2)
-        {
-            map[right_y][right_x + 1] = 3;
-            map[right_y][right_x] = 7;
-            map[player_y][player_x] = 2;
-            availMoveCnt++;
-        }
-    }
-    else if (map[right_y][right_x] == 4)
-    {
-        map[right_y][right_x] = 7;
-        map[player_y][player_x] = 2;
-        availMoveCnt++;
-    }
-    else
-    {
-        map[player_y][player_x] = 2;
-        map[right_y][right_x] = 5;
-        availMoveCnt++;
-    }
-    player_x = right_x;
+    player_x = x_1;
+    player_y = y_1;
 }
 int isAvailableMove()
 {
@@ -854,77 +512,13 @@ void NewMapFileOpen()
         fp = fopen(".\\Maps\\mymap.map", "rwb+");
     else
         return;
-    char ch;
-    char row[2] = {'-', '-'};
-    char column[2] = {'-', '-'};
-    char chests[2] = {'-', '-'};
-    int bias = 0;
-    int count = 0;
-    fseek(fp, bias, SEEK_SET);
-    ch = fgetc(fp);
-    while (ch != ' ')
+    fscanf(fp, "%d %d %d", &row, &column, &chests);
+    for (int i = 0; i < column; i++)
     {
-        row[count] = ch;
-        fseek(fp, bias + 1, SEEK_SET);
-        ch = fgetc(fp);
-        bias++;
-        count++;
-    }
-    if (row[1] == '-')
-        _row = row[0] - 48;
-    else
-        _row = 10 * (row[0] - 48) + (row[1] - 48);
-    count = 0;
-    bias++;
-    fseek(fp, bias, SEEK_SET);
-    ch = fgetc(fp);
-    while (ch != ' ')
-    {
-        column[count] = ch;
-        fseek(fp, bias + 1, SEEK_SET);
-        ch = fgetc(fp);
-        bias++;
-        count++;
-    }
-    if (column[1] == '-')
-        _column = column[0] - 48;
-    else
-        _column = 10 * (column[0] - 48) + (column[1] - 48);
-    count = 0;
-    bias++;
-    fseek(fp, bias, SEEK_SET);
-    ch = fgetc(fp);
-    while (ch != '\n')
-    {
-        chests[count] = ch;
-        fseek(fp, bias + 2, SEEK_SET);
-        ch = fgetc(fp);
-        bias++;
-        count++;
-    }
-    if (chests[1] == '-')
-        _chests = chests[0] - 48;
-    else
-        _chests = 10 * (chests[0] - 48) + (chests[1] - 48);
-    count = 0;
-    //printf("%d %d %d %d\n",bias,_row,_column,_chests);
-    bias += 2;
-    fseek(fp, bias, SEEK_SET);
-    ch = getc(fp);
-    int i_x = 0;
-    int i_y = 0;
-    for (i_y = 0; i_y < _column; i_y++)
-    {
-        for (i_x = 0; i_x < _row; i_x++)
+        for (int j = 0; j < row; j++)
         {
-            map[i_y][i_x] = ch - 48;
-            fseek(fp, bias + 1, SEEK_SET);
-            ch = getc(fp);
-            bias++;
+            fscanf(fp, "%1d", &map[i][j]);
         }
-        bias += 2;
-        fseek(fp, bias, SEEK_SET);
-        ch = fgetc(fp);
     }
     fclose(fp);
 }
@@ -934,15 +528,15 @@ void Save()
     guiInputCheck = 0;
     FILE *_fp;
     _fp = fopen(".\\Maps\\mymap.map", "w+");
-    fprintf(_fp, "%d", _row);
+    fprintf(_fp, "%d", row);
     fprintf(_fp, " ");
-    fprintf(_fp, "%d", _column);
+    fprintf(_fp, "%d", column);
     fprintf(_fp, " ");
-    fprintf(_fp, "%d", _chests);
+    fprintf(_fp, "%d", chests);
     fprintf(_fp, "\n");
-    for (int i = 0; i < _column; i++)
+    for (int i = 0; i < column; i++)
     {
-        for (int j = 0; j < _row; j++)
+        for (int j = 0; j < row; j++)
         {
             fprintf(_fp, "%d", map[i][j]);
         }
@@ -960,15 +554,15 @@ void AutoSave()
         guiInputCheck = 0;
         FILE *_fp;
         _fp = fopen(".\\Maps\\mymap.map", "w+");
-        fprintf(_fp, "%d", _row);
+        fprintf(_fp, "%d", row);
         fprintf(_fp, " ");
-        fprintf(_fp, "%d", _column);
+        fprintf(_fp, "%d", column);
         fprintf(_fp, " ");
-        fprintf(_fp, "%d", _chests);
+        fprintf(_fp, "%d", chests);
         fprintf(_fp, "\n");
-        for (int i = 0; i < _column; i++)
+        for (int i = 0; i < column; i++)
         {
-            for (int j = 0; j < _row; j++)
+            for (int j = 0; j < row; j++)
             {
                 fprintf(_fp, "%d", map[i][j]);
             }
@@ -987,18 +581,18 @@ void HistStore()
         {
             for (int i = availMoveCnt - 1; i >= 0; i--)
             {
-                for (int j = 0; j < _column; j++)
+                for (int j = 0; j < column; j++)
                 {
-                    for (int k = 0; k < _row; k++)
+                    for (int k = 0; k < row; k++)
                     {
                         histMap[j][k].serial[i + 1] = histMap[j][k].serial[i];
                     }
                 }
             }
             //一定要倒着赋值才能保证不丢失数据！！！
-            for (int i = 0; i < _column; i++)
+            for (int i = 0; i < column; i++)
             {
-                for (int j = 0; j < _row; j++)
+                for (int j = 0; j < row; j++)
                 {
                     histMap[i][j].serial[0] = map[i][j];
                 }
@@ -1009,17 +603,17 @@ void HistStore()
         {
             for (int i = histRecordMax + 1; i >= 0; i--)
             {
-                for (int j = 0; j < _column; j++)
+                for (int j = 0; j < column; j++)
                 {
-                    for (int k = 0; k < _row; k++)
+                    for (int k = 0; k < row; k++)
                     {
                         histMap[j][k].serial[i + 1] = histMap[j][k].serial[i];
                     }
                 }
             }
-            for (int i = 0; i < _column; i++)
+            for (int i = 0; i < column; i++)
             {
-                for (int j = 0; j < _row; j++)
+                for (int j = 0; j < row; j++)
                 {
                     histMap[i][j].serial[0] = map[i][j];
                 }
@@ -1029,9 +623,9 @@ void HistStore()
 }
 void EmptyCache(int order) //时空穿越后初始化之前的缓存区
 {
-    for (int i = 0; i < _column; i++)
+    for (int i = 0; i < column; i++)
     {
-        for (int j = 0; j < _row; j++)
+        for (int j = 0; j < row; j++)
         {
             histMap[i][j].serial[order] = 0;
         }
@@ -1039,9 +633,9 @@ void EmptyCache(int order) //时空穿越后初始化之前的缓存区
 }
 int isEmptyCache(int order)
 {
-    for (int i = 0; i <= _column; i++)
+    for (int i = 0; i <= column; i++)
     {
-        for (int j = 0; j <= _row; j++)
+        for (int j = 0; j <= row; j++)
         {
             if (histMap[i][j].serial[order] != 0)
                 return 0;
@@ -1051,26 +645,26 @@ int isEmptyCache(int order)
 }
 void Recall(int order) //要开始穿越了！千万注意逻辑！！！这里的order是穿越到order步之前。
 {
-    for (int i = 0; i < _column; i++)
+    for (int i = 0; i < column; i++)
     {
-        for (int j = 0; j < _row; j++)
+        for (int j = 0; j < row; j++)
         {
             if (map[i][j] == 6 && histMap[i][j].serial[order] == 4)
-                _chests++;
+                chests++;
         }
     } //一开始就要恢复箱子数：后面要操作数组了；箱子数=0是判断胜利的条件
-    for (int i = 0; i < _column; i++)
+    for (int i = 0; i < column; i++)
     {
-        for (int j = 0; j < _row; j++)
+        for (int j = 0; j < row; j++)
         {
             map[i][j] = histMap[i][j].serial[order];
         }
     } //将地图更新为历史地图
     for (int i = 0; i <= histRecordMax - order; i++)
     {
-        for (int j = 0; j < _column; j++)
+        for (int j = 0; j < column; j++)
         {
-            for (int k = 0; k < _row; k++)
+            for (int k = 0; k < row; k++)
             {
                 histMap[j][k].serial[i] = histMap[j][k].serial[order + i];
             }
@@ -1078,9 +672,9 @@ void Recall(int order) //要开始穿越了！千万注意逻辑！！！这里的order是穿越到orde
     }
     for (int i = histRecordMax - order + 1; i < histRecordMax + 1; i++)
         EmptyCache(i); //清空剩下的内存
-    for (int i = 0; i < _column; i++)
+    for (int i = 0; i < column; i++)
     {
-        for (int j = 0; j < _row; j++)
+        for (int j = 0; j < row; j++)
         {
             if (map[i][j] == 5 || map[i][j] == 7)
             {
@@ -1092,7 +686,7 @@ void Recall(int order) //要开始穿越了！千万注意逻辑！！！这里的order是穿越到orde
 }
 void debugHistMap(int order)
 {
-    HistMapRenderer(order);
+    MapRenderer(order);
 }
 void MainMenu()
 {
@@ -1251,9 +845,9 @@ void Gameplay()
     availMoveCnt = 0;
     gameInputCnt = 0;
     timeCache = 0;
-    for (int i = 0; i < _column; i++)
+    for (int i = 0; i < column; i++)
     {
-        for (int j = 0; j < _row; j++)
+        for (int j = 0; j < row; j++)
         {
             histMap[i][j].serial[0] = map[i][j];
         }
@@ -1269,7 +863,7 @@ void Gameplay()
         for (int k = 1; k < X; k++)
             game[k] = '\0';
         super_flag = 1;
-        if (_chests == 0)
+        if (chests == 0)
         {
             printf("You Win !\n ");
             if (level != 's')
@@ -1441,7 +1035,7 @@ void Gameplay()
                             for (int i = 1; i < availMoveCnt + 1; i++)
                             {
                                 printf("%d move(s) ago you're:\n", i);
-                                HistMapRenderer(i);
+                                MapRenderer(i);
                             }
                         }
                         else
@@ -1450,7 +1044,7 @@ void Gameplay()
                             for (int i = 1; i < histRecordMax + 1; i++)
                             {
                                 printf("%d move(s) ago you're:\n", i);
-                                HistMapRenderer(i);
+                                MapRenderer(i);
                             }
                         }
                         while (recall_flag)
@@ -1480,7 +1074,7 @@ void Gameplay()
                 }
                 if (super_flag)
                 {
-                    if (_chests == 0)
+                    if (chests == 0)
                         break;
                     else if (game[j] == 'w')
                     {
